@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import './App.css';
 
+var uuid = require('uuid');
+var firebase = require('firebase');
 
+var config = {
+    apiKey: "AIzaSyDMo_erUhoni_8_fW_RWkS1EUVso5CvaZg",
+    authDomain: "surveys-de4c6.firebaseapp.com",
+    databaseURL: "https://surveys-de4c6.firebaseio.com",
+    storageBucket: "surveys-de4c6.appspot.com",
+    messagingSenderId: "422852128093"
+  };
+  
+  firebase.initializeApp(config);
 
 class App extends Component {
 
@@ -9,7 +20,7 @@ class App extends Component {
     super(props);
     
     this.state = {
-      id: '',
+      id: uuid.v1(),
       name: '',
       answers: {
           q1:'',
@@ -41,9 +52,17 @@ class App extends Component {
     });
   }
 
-  handleQuestionSubmit(event){
+    handleQuestionSubmit(event){
+      firebase.database().ref('surveys/'+this.state.id).set({
+        name: this.state.name,
+        answers:this.state.answers
+      });
 
-  }
+      this.setState({submitted:true}, function(){
+        console.log('Questions Submitted...');
+      });
+      event.preventDefault();
+    }
 
   handleNameSubmit(event){
     var name = this.refs.name.value;
@@ -108,8 +127,8 @@ class App extends Component {
       </span>;
       questions = '';
     } else if(this.state.submitted === true){
-
-    } 
+       user = <h2>Thank You {this.state.name}</h2>
+    }
 
 
     return (
